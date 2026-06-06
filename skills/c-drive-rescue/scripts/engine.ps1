@@ -103,19 +103,80 @@ $Script:TotalScannedBytes = 0
 $Script:TotalCleanedBytes = 0
 $Script:ErrorSamples = @{}  # Sampled error suppression (mimics c_cleaner_plus)
 
+# ---- Junction Detection ----
+function Test-IsReparsePoint {
+    param([string]$Path)
+    if (-not (Test-Path $Path)) { return $false }
+    try {
+        $item = Get-Item $Path -Force -ErrorAction SilentlyContinue
+        return ($item.Attributes -band 0x400) -eq 0x400  # ReparsePoint attribute
+    } catch { return $false }
+}
+
+# Check if any ancestor of Path is a junction (data lives on another drive)
+# Walks parents from leaf up to drive root, checking each level.
+# Handles wildcard paths by stripping the filename portion first.
+function Test-IsUnderJunction {
+    param([string]$Path)
+    # If path contains wildcards, resolve to parent directory
+    if ($Path -match '[\*\?]') {
+        $Path = Split-Path $Path -Parent
+        if (-not $Path) { return $false }
+    }
+    # Remove trailing backslash
+    $Path = $Path.TrimEnd('\')
+    # Walk up: C:\Users\me\AppData\Local\Doubao → ... → C:\
+    $limit = 30
+    while ($Path.Length -gt 3 -and $limit-- -gt 0) {
+        if (Test-IsReparsePoint $Path) { return $true }
+        $idx = $Path.LastIndexOf('\')
+        if ($idx -le 2) { break }  # Stop at drive root (C:\)
+        $Path = $Path.Substring(0, $idx)
+    }
+    return $false
+}
+
+# Safe Get-ChildItem wrapper.
+# Junction protection: caller MUST first call Test-IsUnderJunction on the root path.
+# On non-junction roots (Prefetch, Temp, Edge cache dirs), standard -Recurse is safe
+# because cache/temp directories don't contain sub-junctions.
+function Get-ChildItemSafe {
+    param(
+        [string]$Path,
+        [string]$Filter = "*",
+        [switch]$Recurse,
+        [switch]$File,
+        [switch]$Force
+    )
+    if (-not (Test-Path $Path)) { return @() }
+
+    $params = @{ Path = $Path; Force = $Force; ErrorAction = "SilentlyContinue" }
+    if ($Recurse) { $params.Recurse = $true }
+    if ($File) { $params.File = $true }
+    if ($Filter -ne "*") { $params.Filter = $Filter }
+
+    Get-ChildItem @params
+}
+
 function Get-ScannableBytes {
     param([string]$Path, [string]$Type)
     if (-not (Test-Path $Path)) { return 0 }
     try {
         if ($Type -eq "dir") {
-            return (Get-ChildItem $Path -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+            # Junction check (path or any ancestor): data is on another drive
+            if (Test-IsUnderJunction $Path) { return 0 }
+            $items = Get-ChildItemSafe -Path $Path -Recurse -File -Force
+            return ($items | Measure-Object -Property Length -Sum).Sum
         } elseif ($Type -eq "file") {
+            if (Test-IsReparsePoint $Path) { return 0 }
             return (Get-Item $Path -Force -ErrorAction SilentlyContinue).Length
         } elseif ($Type -eq "glob") {
             $parent = Split-Path $Path -Parent
             $pattern = Split-Path $Path -Leaf
             if (Test-Path $parent) {
-                return (Get-ChildItem $parent -Filter $pattern -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+                # Don't follow junctions within found items
+                $items = Get-ChildItemSafe -Path $parent -Filter $pattern -Recurse -File -Force
+                return ($items | Measure-Object -Property Length -Sum).Sum
             }
         }
     } catch {}
@@ -248,6 +309,7 @@ function Invoke-RuleClean {
     $Script:ErrorSamples = @{}
     $deletedCount = 0
     $failedCount = 0
+    $skippedJunctionCount = 0
 
     if ($NoDelete) {
         Write-Log "INFO" "=== DRY-RUN CLEAN START ==="
@@ -260,6 +322,20 @@ function Invoke-RuleClean {
 
     foreach ($rule in $Script:Rules) {
         $path = Resolve-RulePath -PathTemplate $rule.PathTemplate
+
+        # --- Junction check BEFORE try block (avoids continue-in-try bugs) ---
+        if (Test-IsUnderJunction $path) {
+            if (Test-Path $path) {
+                Write-Log "INFO" "[SKIP] $($rule.Name) — junction to D: (data already migrated)" "Gray"
+            }
+            $skippedJunctionCount++
+            [void]$results.Add([PSCustomObject]@{
+                Rule = $rule.Name; Category = $rule.Category; Path = $path
+                SizeMB = 0; Status = "skipped-junction"; Error = ""
+            })
+            continue
+        }
+
         $size = Get-ScannableBytes -Path $path -Type $rule.Type
 
         if ($size -eq 0) { continue }
@@ -274,12 +350,11 @@ function Invoke-RuleClean {
             try {
                 if ($rule.Type -eq "dir" -and (Test-Path $path)) {
                     if ($useRecycle) {
-                        # Move to recycle bin via Shell.Application
                         $shell = New-Object -ComObject Shell.Application
                         $item = $shell.Namespace(0).ParseName($path)
                         if ($item) { $item.InvokeVerb("delete") }
                     } else {
-                        Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                        Get-ChildItemSafe -Path $path -Recurse -Force | ForEach-Object {
                             try { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } catch {}
                         }
                         Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
@@ -298,7 +373,7 @@ function Invoke-RuleClean {
                     $parent = Split-Path $path -Parent
                     $pattern = Split-Path $path -Leaf
                     if (Test-Path $parent) {
-                        Get-ChildItem $parent -Filter $pattern -Recurse -File -Force -ErrorAction SilentlyContinue | ForEach-Object {
+                        Get-ChildItemSafe -Path $parent -Filter $pattern -Recurse -File -Force | ForEach-Object {
                             try {
                                 if ($useRecycle) {
                                     $sh = New-Object -ComObject Shell.Application
@@ -327,7 +402,7 @@ function Invoke-RuleClean {
                 if ($actual -gt 0) {
                     $Script:TotalCleanedBytes += $actual
                 } else {
-                    $Script:TotalCleanedBytes += $size  # estimate if measurement fails
+                    $Script:TotalCleanedBytes += $size
                 }
                 $deletedCount++
             } elseif ($errorMsg) {
@@ -336,9 +411,7 @@ function Invoke-RuleClean {
         }
 
         [void]$results.Add([PSCustomObject]@{
-            Rule = $rule.Name
-            Category = $rule.Category
-            Path = $path
+            Rule = $rule.Name; Category = $rule.Category; Path = $path
             SizeMB = $sizeMB
             Status = if ($NoDelete) { "would-delete" } elseif ($errorMsg) { "failed" } else { "deleted" }
             Error = $errorMsg
@@ -346,6 +419,7 @@ function Invoke-RuleClean {
     }
 
     if (-not $NoDelete) {
+        Write-Log "INFO" "Skipped (junction): $skippedJunctionCount rules"
         Write-Log "INFO" "Deleted: $deletedCount rules, Failed: $failedCount rules"
     }
     Write-Log "INFO" "=== CLEAN COMPLETE: $([math]::Round($Script:TotalCleanedBytes/1GB,2)) GB freed ==="

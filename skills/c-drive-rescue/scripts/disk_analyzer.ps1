@@ -1,4 +1,4 @@
-<![CDATA[
+
 <#
 .SYNOPSIS
   C Drive Disk Analyzer - Read-only analysis of disk space usage
@@ -139,4 +139,3 @@ if (Test-Path "C:\MyDrivers") {
 
 Write-Section "Analysis Complete"
 Write-Host "Run safe_cleanup.ps1 next for user-level cleanup." -ForegroundColor Yellow
-]]>

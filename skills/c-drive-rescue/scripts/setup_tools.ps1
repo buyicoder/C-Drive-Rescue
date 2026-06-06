@@ -1,4 +1,4 @@
-<![CDATA[
+
 <#
 .SYNOPSIS
   Setup script for c-disk-cleaner — downloads open-source cleanup tools
@@ -95,4 +95,3 @@ Write-Host ""
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host "  Setup complete. ${engines.Count} engines available." -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
-]]>

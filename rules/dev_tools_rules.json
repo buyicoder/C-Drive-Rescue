@@ -1,0 +1,22 @@
+[
+  ["JetBrains IDE Caches", "%LOCALAPPDATA%\\JetBrains\\*\\caches", "glob", true, "JetBrains IDE caches (IntelliJ, PyCharm, WebStorm, etc.). Indexes kept."],
+  ["JetBrains IDE Logs", "%LOCALAPPDATA%\\JetBrains\\*\\log", "glob", true, "JetBrains IDE log files."],
+  ["VS Code C++ IntelliSense IPCH", "%LOCALAPPDATA%\\Microsoft\\vscode-cpptools\\*\\ipch", "glob", true, "Visual Studio Code C++ IntelliSense PCH cache."],
+  ["VS Code C++ Browse Cache", "%LOCALAPPDATA%\\Microsoft\\vscode-cpptools\\*\\browse.VC.db*", "file", true, "Visual Studio Code C++ browse database."],
+  ["Visual Studio Component Cache", "%LOCALAPPDATA%\\Microsoft\\VisualStudio\\*\\ComponentModelCache", "glob", true, "Visual Studio component model cache."],
+  ["Visual Studio WebView2 Cache", "%LOCALAPPDATA%\\Microsoft\\VisualStudio\\*\\WebView2Cache", "glob", true, "Visual Studio WebView2 data."],
+  ["pip Cache", "%LOCALAPPDATA%\\pip\\cache", "dir", true, "Python pip download cache."],
+  ["npm Cache", "%APPDATA%\\npm-cache", "dir", true, "Node.js npm package cache."],
+  ["NuGet HTTP Cache", "%LOCALAPPDATA%\\NuGet\\v3-cache", "dir", true, "NuGet package manager HTTP cache."],
+  ["NuGet Plugins Cache", "%LOCALAPPDATA%\\NuGet\\plugins-cache", "dir", true, "NuGet plugins cache."],
+  ["Cargo Registry", "%USERPROFILE%\\.cargo\\registry\\cache", "dir", true, "Rust Cargo registry cache."],
+  ["Cargo Git DB", "%USERPROFILE%\\.cargo\\git\\db", "dir", true, "Rust Cargo git checkout database."],
+  ["Go Module Cache", "%USERPROFILE%\\go\\pkg\\mod\\cache", "dir", true, "Go module download cache."],
+  ["Gradle Caches", "%USERPROFILE%\\.gradle\\caches", "dir", true, "Gradle build cache."],
+  ["Maven Local Repository", "%USERPROFILE%\\.m2\\repository", "dir", false, "Maven local repository. Re-downloadable. MARKED DANGEROUS.", true, false],
+  ["Conda Package Cache", "%USERPROFILE%\\Miniconda*\\pkgs", "glob", true, "Conda package cache."],
+  ["Conda Package Cache (Anaconda)", "%USERPROFILE%\\Anaconda*\\pkgs", "glob", true, "Anaconda package cache."],
+  ["uv Cache", "%LOCALAPPDATA%\\uv\\cache", "dir", true, "uv Python package manager cache."],
+  ["pnpm Store", "%LOCALAPPDATA%\\pnpm-cache", "dir", true, "pnpm package store."],
+  ["Yarn Cache", "%LOCALAPPDATA%\\Yarn\\cache", "dir", true, "Yarn package cache."]
+]

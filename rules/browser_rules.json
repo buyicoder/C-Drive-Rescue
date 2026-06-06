@@ -1,0 +1,18 @@
+[
+  ["Edge Cache", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\Default\\Cache\\Cache_Data", "dir", true, "Microsoft Edge browser cache."],
+  ["Edge Code Cache", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\Default\\Code Cache", "dir", true, "Edge compiled JavaScript cache."],
+  ["Edge GPUCache", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\Default\\GPUCache", "dir", true, "Edge GPU shader cache."],
+  ["Edge ShaderCache", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\ShaderCache", "dir", true, "Edge shader cache."],
+  ["Edge GrShaderCache", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\GrShaderCache", "dir", true, "Edge graphics shader cache."],
+  ["Edge Service Worker Cache", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\Default\\Service Worker\\CacheStorage", "dir", true, "Edge service worker storage."],
+  ["Edge Service Worker Scripts", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\Default\\Service Worker\\ScriptCache", "dir", true, "Edge service worker script cache."],
+  ["Edge Service Worker DB", "%LOCALAPPDATA%\\Microsoft\\Edge\\User Data\\Default\\Service Worker\\Database", "dir", true, "Edge service worker database."],
+  ["Chrome Cache", "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\Cache\\Cache_Data", "dir", true, "Google Chrome browser cache."],
+  ["Chrome Code Cache", "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\Code Cache", "dir", true, "Chrome compiled JavaScript cache."],
+  ["Chrome GPUCache", "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\GPUCache", "dir", true, "Chrome GPU shader cache."],
+  ["Chrome ShaderCache", "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\ShaderCache", "dir", true, "Chrome shader cache."],
+  ["Firefox Cache", "%LOCALAPPDATA%\\Mozilla\\Firefox\\Profiles\\*\\cache2", "glob", true, "Firefox browser cache."],
+  ["Firefox Offline Cache", "%LOCALAPPDATA%\\Mozilla\\Firefox\\Profiles\\*\\OfflineCache", "glob", true, "Firefox offline cache."],
+  ["IE Cache", "%LOCALAPPDATA%\\Microsoft\\Windows\\INetCache", "dir", true, "Internet Explorer / WebView cache."],
+  ["IE Cookies Cache", "%LOCALAPPDATA%\\Microsoft\\Windows\\INetCookies", "dir", true, "Internet Explorer cookies."]
+]

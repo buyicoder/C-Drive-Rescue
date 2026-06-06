@@ -1,0 +1,20 @@
+[
+  ["Steam Download Cache", "%PROGRAMFILES(X86)%\\Steam\\steamapps\\downloading", "dir", true, "Steam download cache. Incomplete downloads."],
+  ["Steam Workshop Temp", "%PROGRAMFILES(X86)%\\Steam\\steamapps\\workshop\\temp", "dir", true, "Steam Workshop temporary files."],
+  ["Steam Shader Cache", "%PROGRAMFILES(X86)%\\Steam\\steamapps\\shadercache", "dir", true, "Steam shader pre-caching."],
+  ["Steam Logs", "%PROGRAMFILES(X86)%\\Steam\\logs", "dir", true, "Steam client log files."],
+  ["Epic Games Cache", "%LOCALAPPDATA%\\EpicGamesLauncher\\Saved\\webcache", "dir", true, "Epic Games Launcher web cache."],
+  ["Epic Games Logs", "%LOCALAPPDATA%\\EpicGamesLauncher\\Saved\\Logs", "dir", true, "Epic Games Launcher logs."],
+  ["Unity Asset Cache", "%LOCALAPPDATA%\\Unity\\cache", "dir", true, "Unity Editor asset cache."],
+  ["Unity Package Cache", "%LOCALAPPDATA%\\Unity\\Asset Store", "dir", true, "Unity Asset Store cache."],
+  ["Unreal Engine DerivedDataCache", "%LOCALAPPDATA%\\UnrealEngine\\Common\\DerivedDataCache", "dir", true, "Unreal Engine derived data cache."],
+  ["Unreal Engine Saved/Crashes", "%LOCALAPPDATA%\\UnrealEngine\\*\\Saved\\Crashes", "glob", true, "Unreal Engine crash reports."],
+  ["Unreal Engine Saved/Logs", "%LOCALAPPDATA%\\UnrealEngine\\*\\Saved\\Logs", "glob", true, "Unreal Engine log files."],
+  ["Unreal Engine Intermediate", "%LOCALAPPDATA%\\UnrealEngine\\*\\Intermediate", "glob", true, "Unreal Engine intermediate build files."],
+  ["NVIDIA Shader Cache (DX)", "%LOCALAPPDATA%\\NVIDIA\\DXCache", "dir", true, "NVIDIA DirectX shader cache."],
+  ["NVIDIA Shader Cache (GL)", "%LOCALAPPDATA%\\NVIDIA\\GLCache", "dir", true, "NVIDIA OpenGL shader cache."],
+  ["NVIDIA Compute Cache", "%LOCALAPPDATA%\\NVIDIA\\ComputeCache", "dir", true, "NVIDIA compute shader cache."],
+  ["AMD Shader Cache (DX)", "%LOCALAPPDATA%\\AMD\\DxCache", "dir", true, "AMD DirectX shader cache."],
+  ["Battle.net Cache", "%ALLUSERSPROFILE%\\Battle.net\\Agent\\*\\Logs", "glob", true, "Battle.net agent logs."],
+  ["Riot Games Logs", "%LOCALAPPDATA%\\Riot Games\\*\\Logs", "glob", true, "Riot Games client logs."]
+]

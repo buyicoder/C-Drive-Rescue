@@ -1,0 +1,19 @@
+[
+  ["Windows Temp (%WINDIR%\\Temp)", "%WINDIR%\\Temp", "dir", true, "Windows system temporary files. Safe to clean."],
+  ["User Temp (%TEMP%)", "%TEMP%", "dir", true, "Current user temporary files. Safe to clean."],
+  ["Windows Prefetch", "%WINDIR%\\Prefetch", "dir", true, "Application prefetch data. Regenerates automatically."],
+  ["Windows Update Download Cache", "%WINDIR%\\SoftwareDistribution\\Download", "dir", true, "Windows Update downloaded installers. Safe to clean."],
+  ["Delivery Optimization Cache", "%WINDIR%\\SoftwareDistribution\\DeliveryOptimization", "dir", true, "Delivery Optimization peer-to-peer cache."],
+  ["Windows Error Reports (Archive)", "%ALLUSERSPROFILE%\\Microsoft\\Windows\\WER\\ReportArchive", "dir", true, "Archived Windows error reports."],
+  ["Windows Error Reports (Queue)", "%ALLUSERSPROFILE%\\Microsoft\\Windows\\WER\\ReportQueue", "dir", true, "Queued Windows error reports."],
+  ["Windows Logs (DISM)", "%WINDIR%\\Logs\\DISM", "dir", true, "DISM deployment image servicing logs."],
+  ["CBS Logs (older than 30d)", "%WINDIR%\\Logs\\CBS", "glob", true, "Component Based Servicing logs. System will rotate."],
+  ["Windows Defender Scans", "%ALLUSERSPROFILE%\\Microsoft\\Windows Defender\\Scans", "dir", true, "Windows Defender scan cache."],
+  ["Windows Defender Definition Backups", "%ALLUSERSPROFILE%\\Microsoft\\Windows Defender\\Definition Updates\\Backup", "dir", true, "Old virus definition backups."],
+  ["Recycle Bin (all drives)", "C:\\$Recycle.Bin", "dir", false, "Recycle bin contents for all users. MARKED DANGEROUS.", true, false],
+  ["Memory Dumps", "%WINDIR%\\MEMORY.DMP", "file", false, "System crash memory dump. Large file, safe to delete."],
+  ["Minidumps", "%WINDIR%\\Minidump", "dir", true, "Small system crash dumps."],
+  ["Thumbnail Cache", "%LOCALAPPDATA%\\Microsoft\\Windows\\Explorer\\thumbcache_*.db", "file", true, "Windows Explorer thumbnail cache."],
+  ["Font Cache", "%LOCALAPPDATA%\\Microsoft\\Windows\\Fonts\\*Cache*", "file", true, "Font rendering cache."],
+  ["Icon Cache", "%LOCALAPPDATA%\\Microsoft\\Windows\\Explorer\\iconcache_*.db", "file", true, "Windows Explorer icon cache."]
+]

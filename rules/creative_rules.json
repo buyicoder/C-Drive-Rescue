@@ -1,0 +1,20 @@
+[
+  ["Autodesk Installer Cache (WI)", "C:\\Autodesk\\WI", "dir", true, "Autodesk product installer cache. Safe to delete after installation."],
+  ["Adobe Installer Cache", "%ALLUSERSPROFILE%\\Adobe\\Setup\\*", "glob", true, "Adobe product installer cache."],
+  ["Adobe Temp", "%LOCALAPPDATA%\\Adobe\\*\\Temp", "glob", true, "Adobe application temp files."],
+  ["Adobe Camera Raw Cache", "%APPDATA%\\Adobe\\CameraRaw\\Cache", "dir", true, "Adobe Camera Raw render cache."],
+  ["Premiere Pro Media Cache", "%APPDATA%\\Adobe\\Common\\Media Cache", "dir", true, "Adobe Premiere Pro media cache."],
+  ["Premiere Pro Media Cache Files", "%APPDATA%\\Adobe\\Common\\Media Cache Files", "dir", true, "Adobe Premiere Pro media cache data files."],
+  ["After Effects Disk Cache", "%APPDATA%\\Adobe\\After Effects\\*\\Disk Cache", "glob", true, "Adobe After Effects disk cache."],
+  ["Photoshop Temp", "%APPDATA%\\Adobe\\Adobe Photoshop*\\*Temp*", "glob", true, "Adobe Photoshop temp files."],
+  ["Blender Cache", "%LOCALAPPDATA%\\Blender Foundation\\Blender\\*\\cache", "glob", true, "Blender render cache."],
+  ["Blender Temp", "%TEMP%\\blender_*", "glob", true, "Blender temp render files."],
+  ["DaVinci Resolve Cache", "%APPDATA%\\Blackmagic Design\\DaVinci Resolve\\*\\CacheClip", "glob", true, "DaVinci Resolve cache clips."],
+  ["DaVinci Resolve Optimized Media", "%APPDATA%\\Blackmagic Design\\DaVinci Resolve\\*\\OptimizedMedia", "glob", true, "DaVinci Resolve optimized media."],
+  ["Figma Desktop Cache", "%APPDATA%\\Figma\\DesktopProfile\\*\\Cache", "glob", true, "Figma desktop app cache."],
+  ["Figma Desktop GPUCache", "%APPDATA%\\Figma\\DesktopProfile\\*\\GPUCache", "glob", true, "Figma GPU cache."],
+  ["Visual Studio Code Cache", "%APPDATA%\\Code\\Cache", "dir", true, "VS Code general cache."],
+  ["Visual Studio Code CachedData", "%APPDATA%\\Code\\CachedData", "dir", true, "VS Code cached extension data."],
+  ["Visual Studio Code Logs", "%APPDATA%\\Code\\logs", "dir", true, "VS Code log files."],
+  ["Visual Studio Code CachedExtensions", "%USERPROFILE%\\.vscode\\extensions\\*\\node_modules\\.cache", "glob", true, "VS Code extension caches."]
+]

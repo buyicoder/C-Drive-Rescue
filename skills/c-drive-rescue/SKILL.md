@@ -1,45 +1,51 @@
 ---
 name: c-drive-rescue
-description: 当用户说"清理C盘""C盘满了""C盘红了""释放C盘空间""C drive cleanup"时使用。三引擎架构——system-tools.rs(4万⭐ Rust CLI,35条规则)主引擎 + Windows内置命令(dism/cleanmgr)辅助 + PowerShell Junction迁移兜底。覆盖：磁盘分析 → 安全清理 → 系统深度清理 → 大文件夹搬家到D盘 → 效果报告。典型效果：200GB C盘从88%降到68%，释放25-40GB。
-version: 2.0.0
+description: 当用户说"清理C盘""C盘满了""C盘红了""释放C盘空间""C drive cleanup"时使用。四引擎架构——JSON规则引擎(116条规则,BleachBit兼容) + system-tools.rs(4万⭐ Rust CLI) + Windows内置命令(dism/cleanmgr) + 三级回退NTFS Junction迁移。借鉴c_cleaner_plus规则商店/WindowsClear三级搬家/Dism++深度清理。五阶段：分析→安全清理→系统清理→搬家→报告。典型效果：200GB C盘从88%降到68%，释放25-40GB。
+version: 3.0.0
 ---
 
-# 🛟 C-Drive Rescue — 拯救C盘 (v2)
+# 🛟 C-Drive Rescue — 拯救C盘 (v3)
 
 ## Architecture
 
 ```
-                    ┌─────────────────────────┐
-                    │    C-Drive-Rescue Skill  │
-                    └───────────┬─────────────┘
-                                │
-              ┌─────────────────┼─────────────────┐
-              ▼                 ▼                   ▼
-     ┌───────────────┐ ┌──────────────┐ ┌──────────────────┐
-     │ system-tools  │ │   Windows    │ │  Custom PS       │
-     │    .rs        │ │  Built-ins   │ │  Scripts         │
-     │ (primary)     │ │  (secondary) │ │  (junction only)  │
-     │ 35 rules      │ │ dism/cleanmgr│ │  robocopy +       │
-     │ CLI + MCP     │ │ vssadmin/wsl │ │  mklink           │
-     └───────────────┘ └──────────────┘ └──────────────────┘
+                      ┌─────────────────────────┐
+                      │    C-Drive-Rescue Skill  │
+                      └───────────┬─────────────┘
+                                  │
+       ┌──────────────┬───────────┼───────────┬──────────────┐
+       ▼              ▼           ▼           ▼              ▼
+  ┌─────────┐  ┌──────────┐ ┌─────────┐ ┌──────────┐ ┌──────────┐
+  │ Engine①│  │ Engine②  │ │Engine③  │ │ Engine④  │ │  Rules   │
+  │ JSON    │  │ system-  │ │Windows  │ │Junction  │ │  Store   │
+  │ Rule    │  │ tools.rs │ │Built-in │ │Migration │ │  116     │
+  │ Engine  │  │ 35 rules │ │dism     │ │3-Tier    │ │  rules   │
+  │-------- │  │ Rust CLI │ │cleanmgr │ │Fallback  │ │  6 cats  │
+  │Primary  │  │Secondary │ │Fallback │ │Unique    │ │BleachBit │
+  └─────────┘  └──────────┘ └─────────┘ └──────────┘ └──────────┘
 ```
 
-**Engine 1 — [system-tools.rs](https://github.com/VDHewei/system-tools.rs)** (Primary):
-- 6 大类 35 条内置清理规则，覆盖系统/浏览器/开发工具/国产软件
-- 参考了 360、火绒、腾讯电脑管家的深度清理理念
-- Rust 单文件可执行，~5 MB，零依赖
-- 安全模式 `--items 0`：不删个人文件，只清系统+应用缓存
-- 支持 `--dry-run` 预览，不实际删除
+**Engine ① — JSON 规则引擎** (Primary, 借鉴 c_cleaner_plus):
+- 116 条清理规则，BleachBit 兼容 JSON 格式
+- 6 大类：system / browser / dev_tools / cn_apps / game / creative
+- 规则与代码分离——改规则不用改脚本
+- 支持逐规则 `recycle_bin` 开关、`isSafe` 标记、`DryRun` 预览
 
-**Engine 2 — Windows 内置命令** (Fallback):
-- `dism /online /cleanup-image /startcomponentcleanup` — WinSxS 组件清理
-- `cleanmgr /autoclean` — 系统磁盘清理
-- `vssadmin resize shadowstorage` — 系统还原点裁剪
+**Engine ② — [system-tools.rs](https://github.com/VDHewei/system-tools.rs)** (Secondary):
+- 40,000+ Stars Rust CLI，35 条内置规则
+- `--dry-run` 预览、`--items 0` 安全模式
+- MCP 服务器模式可对接 AI Agent
 
-**Engine 3 — 自定义 PowerShell** (Junction 迁移):
-- `robocopy` + NTFS Junction — 大文件夹搬家到 D 盘
-- WSL `--export` / `--import` — WSL 发行版迁移
-- 这是 system-tools.rs 不覆盖的能力
+**Engine ③ — Windows 内置** (Fallback):
+- `dism /online /cleanup-image /startcomponentcleanup /resetbase`
+- `cleanmgr /autoclean`
+- `vssadmin resize shadowstorage`
+
+**Engine ④ — 三级回退 Junction 迁移** (Unique, 借鉴 WindowsClear):
+- Tier 1: Move-Item 同盘 rename（瞬时）
+- Tier 2: robocopy /MIR 增量同步（支持续传）
+- Tier 3: .partial 分阶段复制（原子操作）
+- 进程锁定检测 + 失败回滚 + 操作历史 JSON
 
 ## Cleanup Phases
 

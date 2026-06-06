@@ -325,16 +325,30 @@ function Invoke-RuleClean {
         $sizeMB = [math]::Round($size / 1MB, 1)
 
         if (-not $NoDelete) {
-            $useRecycle = $UseRecycleBin -or $rule.Recycle
+            # Only use recycle bin when explicitly requested via -RecycleBin flag.
+            # Never create COM Shell.Application automatically — it hangs in
+            # non-interactive PowerShell (bash subprocess, CI, etc).
+            $useRecycle = $UseRecycleBin
             $cleaned = $false
             $errorMsg = ""
 
             try {
                 if ($rule.Type -eq "dir" -and (Test-Path $path)) {
                     if ($useRecycle) {
-                        $shell = New-Object -ComObject Shell.Application
-                        $item = $shell.Namespace(0).ParseName($path)
-                        if ($item) { $item.InvokeVerb("delete") }
+                        # COM Shell.Application may block in headless contexts.
+                        # Fall through to direct delete on any failure.
+                        try { $null = & {
+                            $job = Start-Job -ScriptBlock {
+                                param($p) $sh=New-Object -ComObject Shell.Application; $it=$sh.Namespace(0).ParseName($p); if($it){$it.InvokeVerb("delete")}
+                            } -ArgumentList $path
+                            Wait-Job $job -Timeout 5 | Out-Null
+                            Stop-Job $job -ErrorAction SilentlyContinue
+                            Remove-Job $job -Force -ErrorAction SilentlyContinue
+                        } } catch {
+                            Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue |
+                                ForEach-Object { try { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } catch {} }
+                            Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+                        }
                     } else {
                         Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
                             try { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } catch {}
@@ -344,9 +358,20 @@ function Invoke-RuleClean {
                     $cleaned = $true
                 } elseif ($rule.Type -eq "file" -and (Test-Path $path)) {
                     if ($useRecycle) {
-                        $shell = New-Object -ComObject Shell.Application
-                        $item = $shell.Namespace(0).ParseName($path)
-                        if ($item) { $item.InvokeVerb("delete") }
+                        # COM Shell.Application may block in headless contexts.
+                        # Fall through to direct delete on any failure.
+                        try { $null = & {
+                            $job = Start-Job -ScriptBlock {
+                                param($p) $sh=New-Object -ComObject Shell.Application; $it=$sh.Namespace(0).ParseName($p); if($it){$it.InvokeVerb("delete")}
+                            } -ArgumentList $path
+                            Wait-Job $job -Timeout 5 | Out-Null
+                            Stop-Job $job -ErrorAction SilentlyContinue
+                            Remove-Job $job -Force -ErrorAction SilentlyContinue
+                        } } catch {
+                            Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue |
+                                ForEach-Object { try { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } catch {} }
+                            Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+                        }
                     } else {
                         Remove-Item $path -Force -ErrorAction SilentlyContinue
                     }

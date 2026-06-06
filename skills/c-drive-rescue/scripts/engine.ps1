@@ -136,27 +136,9 @@ function Test-IsUnderJunction {
     return $false
 }
 
-# Safe Get-ChildItem wrapper.
-# Junction protection: caller MUST first call Test-IsUnderJunction on the root path.
-# On non-junction roots (Prefetch, Temp, Edge cache dirs), standard -Recurse is safe
-# because cache/temp directories don't contain sub-junctions.
-function Get-ChildItemSafe {
-    param(
-        [string]$Path,
-        [string]$Filter = "*",
-        [switch]$Recurse,
-        [switch]$File,
-        [switch]$Force
-    )
-    if (-not (Test-Path $Path)) { return @() }
-
-    $params = @{ Path = $Path; Force = $Force; ErrorAction = "SilentlyContinue" }
-    if ($Recurse) { $params.Recurse = $true }
-    if ($File) { $params.File = $true }
-    if ($Filter -ne "*") { $params.Filter = $Filter }
-
-    Get-ChildItem @params
-}
+# Junction-safe Get-ChildItem.
+# Caller MUST call Test-IsUnderJunction first on the root path.
+# Uses standard -Recurse — safe because temp/cache dirs don't contain sub-junctions.
 
 function Get-ScannableBytes {
     param([string]$Path, [string]$Type)
@@ -165,7 +147,7 @@ function Get-ScannableBytes {
         if ($Type -eq "dir") {
             # Junction check (path or any ancestor): data is on another drive
             if (Test-IsUnderJunction $Path) { return 0 }
-            $items = Get-ChildItemSafe -Path $Path -Recurse -File -Force
+            $items = Get-ChildItem $Path -Recurse -File -Force -ErrorAction SilentlyContinue
             return ($items | Measure-Object -Property Length -Sum).Sum
         } elseif ($Type -eq "file") {
             if (Test-IsReparsePoint $Path) { return 0 }
@@ -175,7 +157,7 @@ function Get-ScannableBytes {
             $pattern = Split-Path $Path -Leaf
             if (Test-Path $parent) {
                 # Don't follow junctions within found items
-                $items = Get-ChildItemSafe -Path $parent -Filter $pattern -Recurse -File -Force
+$items = Get-ChildItem $parent -Filter $pattern -Recurse -File -Force -ErrorAction SilentlyContinue
                 return ($items | Measure-Object -Property Length -Sum).Sum
             }
         }
@@ -354,7 +336,7 @@ function Invoke-RuleClean {
                         $item = $shell.Namespace(0).ParseName($path)
                         if ($item) { $item.InvokeVerb("delete") }
                     } else {
-                        Get-ChildItemSafe -Path $path -Recurse -Force | ForEach-Object {
+                        Get-ChildItem $path -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
                             try { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue } catch {}
                         }
                         Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue

@@ -51,7 +51,9 @@ param(
     [switch]$RecycleBin,
 
     [ValidateSet("zh_cn", "en_us")]
-    [string]$Lang = "zh_cn"
+    [string]$Lang = "zh_cn",
+
+    [string]$TargetDrive = "C:"
 )
 
 $ErrorActionPreference = "Continue"
@@ -64,6 +66,7 @@ if (-not $RuleDir) {
     }
 }
 $Script:RuleDir = $RuleDir
+$Script:TargetDrive = $TargetDrive
 
 $Script:LogDir = "C:\Temp\c-drive-rescue"
 $Script:LogFile = Join-Path $Script:LogDir "engine.log"
@@ -173,7 +176,12 @@ function Resolve-RulePath {
     $matches = [regex]::Matches($resolved, '%([^%]+)%')
     foreach ($m in $matches) {
         $varName = $m.Groups[1].Value
-        $varValue = [Environment]::GetEnvironmentVariable($varName)
+        if ($varName -eq "DRIVE") {
+            # %DRIVE% is resolved to the target drive specified by -TargetDrive parameter
+            $varValue = $Script:TargetDrive
+        } else {
+            $varValue = [Environment]::GetEnvironmentVariable($varName)
+        }
         if ($varValue) {
             $resolved = $resolved.Replace($m.Value, $varValue)
         }

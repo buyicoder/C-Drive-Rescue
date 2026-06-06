@@ -1,0 +1,18 @@
+[
+  ["Unreal Engine DerivedDataCache", "%DRIVE%\\ue\\*\\DerivedDataCache", "glob", true, "UE engine shader cache. Regenerates on next build."],
+  ["Unreal Engine Intermediate", "%DRIVE%\\ue\\*\\Intermediate", "glob", true, "UE engine intermediate build files. Regenerates."],
+  ["Unreal Engine Build", "%DRIVE%\\ue\\*\\Build", "glob", true, "UE engine build artifacts. Regenerates."],
+  ["Unreal Engine Saved/Logs", "%DRIVE%\\ue\\*\\Saved\\Logs", "glob", true, "UE project logs. Safe to delete."],
+  ["Unreal Engine Saved/Crashes", "%DRIVE%\\ue\\*\\Saved\\Crashes", "glob", true, "UE crash dumps. Safe to delete."],
+  ["BaiduNetdisk Downloaded Installers", "%DRIVE%\\BaiduNetdiskDownload", "dir", false, "Baidu cloud downloaded files. Check before deleting! MARKED DANGEROUS.", true, false],
+  ["BaiduSyncdisk Duplicates", "%DRIVE%\\BaiduSyncdisk\\*(1)", "glob", true, "Baidu sync duplicate folders (name(1) pattern)."],
+  ["Steam Download Cache", "%DRIVE%\\SteamLibrary\\steamapps\\downloading", "dir", true, "Steam incomplete downloads."],
+  ["Steam Workshop Temp", "%DRIVE%\\SteamLibrary\\steamapps\\workshop\\temp", "dir", true, "Steam Workshop temp files."],
+  ["Steam Shader Cache", "%DRIVE%\\SteamLibrary\\steamapps\\shadercache", "dir", true, "Steam shader pre-caching data."],
+  ["Large Installer Files (*.iso)", "%DRIVE%\\BaiduNetdiskDownload\\*.iso", "file", false, "ISO disk images from downloads. Check before deleting."],
+  ["Large Installer Files (*.zip >500MB)", "%DRIVE%\\BaiduNetdiskDownload\\*.zip", "file", false, "ZIP archives from downloads. Check before deleting."],
+  ["Large Movie Files (*.mkv)", "%DRIVE%\\BaiduNetdiskDownload\\*.mkv", "file", false, "Movie files in downloads. Check before deleting."],
+  ["Large Movie Files (*.mp4)", "%DRIVE%\\BaiduNetdiskDownload\\*.mp4", "file", false, "Video files in downloads. Check before deleting."],
+  ["Game Recording Files (*.mkv in Games)", "%DRIVE%\\Games\\*\\*.mkv", "glob", false, "Game recording video files. Large! Check before deleting.", true, false],
+  ["Large RAR Archives", "%DRIVE%\\BaiduNetdiskDownload\\*.rar", "file", false, "RAR archives from downloads. Check before deleting."]
+]

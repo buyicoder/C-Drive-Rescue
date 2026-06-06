@@ -45,7 +45,8 @@
 | `cn_apps_rules.json` | 微信 / QQ / 钉钉 / 飞书 / 剪映 / 豆包 / WPS / 迅雷等 | 27 |
 | `game_rules.json` | Steam / Epic / Unity / Unreal / NVIDIA / AMD | 18 |
 | `creative_rules.json` | Autodesk / Adobe / Blender / DaVinci / Figma / VS Code | 18 |
-| **合计** | | **116 条规则** |
+| `large_drive_rules.json` | 非系统盘大文件清理：UE缓存、百度网盘安装包、Steam、录屏 | 16 |
+| **合计** | | **132 条规则** |
 
 ## 贡献新规则
 

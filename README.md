@@ -1,10 +1,10 @@
 # 🛟 C-Drive Rescue — 拯救C盘
 
 [![Version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/buyicoder/C-Drive-Rescue)
-[![Rules](https://img.shields.io/badge/rules-116-green)](https://github.com/buyicoder/C-Drive-Rescue/tree/main/rules)
+[![Rules](https://img.shields.io/badge/rules-132-green)](https://github.com/buyicoder/C-Drive-Rescue/tree/main/rules)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-> Windows C 盘深度清理 Claude Code 插件。**116 条 BleachBit 兼容规则** + 四引擎驱动 + 三级回退 Junction 搬家。一句「C盘满了」自动触发，安全释放 25–40GB。
+> **多盘符** Windows 磁盘深度清理 Claude Code 插件。**132 条 BleachBit 兼容规则** + 四引擎驱动 + 三级回退 Junction 搬家。支持 C: / D: / E: 任意盘，一句「C盘满了」或「清理E盘」自动触发。
 
 ---
 
@@ -30,11 +30,13 @@
 
 - `C盘满了`
 - `清理C盘`
+- `清理E盘`
 - `释放C盘空间`
 - `C盘红了`
 - `clean C drive`
+- `free up disk space`
 
-插件会自动：扫描→清理→系统深度清理→大文件夹搬家→出报告。
+插件会自动：扫描→清理→系统深度清理→大文件夹搬家→出报告。支持 **C: / D: / E: 任意盘符**。
 
 ---
 
@@ -49,10 +51,10 @@
 ├──────────┬───────────┬───────────┬──────────┬────────┤
 │ Engine ①│ Engine ②  │ Engine ③ │ Engine ④ │ Rules  │
 │ JSON     │ system-   │ Windows   │Junction  │ Store  │
-│ Rule     │ tools.rs  │ Built-in  │Migration │ 116    │
+│ Rule     │ tools.rs  │ Built-in  │Migration │ 132    │
 │ Engine   │ 4万⭐     │           │3-Tier    │ rules  │
 │----------│-----------│-----------│----------│--------│
-│ Primary  │Secondary  │ Fallback  │ Unique   │6 cats  │
+│ Primary  │Secondary  │ Fallback  │ Unique   │7 cats  │
 │----------│-----------│-----------│----------│--------│
 │BleachBit │ Rust CLI  │ dism      │Tier1:    │system  │
 │compat    │ 35 rules  │ cleanmgr  │  rename  │browser │
@@ -60,12 +62,13 @@
 │+ clean   │ + MCP     │           │  robocopy│cn_apps │
 │          │           │           │Tier3:    │game    │
 │          │           │           │  .partial│creative│
+│          │           │           │          │large   │
 └──────────┴───────────┴───────────┴──────────┴────────┘
 ```
 
 | 引擎 | 借鉴项目 | 做什么 |
 |------|----------|--------|
-| ① **JSON 规则引擎** | [c_cleaner_plus](https://github.com/Kiowx/c_cleaner_plus) (1090⭐) | 116 条 BleachBit 兼容规则，规则与代码分离，逐项 DryRun 预览 |
+| ① **JSON 规则引擎** | [c_cleaner_plus](https://github.com/Kiowx/c_cleaner_plus) (1090⭐) | 132 条 BleachBit 兼容规则，7 大分类，支持 `-TargetDrive` 多盘符 |
 | ② **system-tools.rs** | [system-tools.rs](https://github.com/VDHewei/system-tools.rs) (4万⭐) | 35 条内置清理规则，Rust CLI 零依赖 |
 | ③ **Windows 内置** | [Dism++](https://github.com/Chuyu-Team/Dism-Multi-language) (4万⭐) | DISM 组件清理 / cleanmgr / 系统还原点裁剪 |
 | ④ **三级回退迁移** | [WindowsClear](https://github.com/tanaer/WindowsClear) (848⭐) | rename→robocopy→.partial 三级搬家 + 回滚 + 进程检测 + 操作历史 |
@@ -78,9 +81,9 @@
 
 | # | 阶段 | 干了什么 | 需要管理员？ |
 |---|------|----------|:---:|
-| ① | **磁盘分析** | 116 条规则扫描 + system-tools.rs 35 规则，定位空间大户 | ❌ |
+| ① | **磁盘分析** | 132 条规则 + system-tools.rs 35 规则，支持 C:/D:/E: 任意盘符 | ❌ |
 | ② | **安全清理** | JSON 引擎 safe 模式：系统/浏览器/IDE/开发工具/国产软件缓存 | ❌ |
-| ③ | **系统清理** | 全部 116 条规则 + DISM 组件 + cleanmgr + NVIDIA + 回收站 | ✅ |
+| ③ | **系统清理** | 全部 132 条规则 + DISM 组件 + cleanmgr + NVIDIA + 回收站 | ✅ |
 | ④ | **文件夹搬家** | 三级回退 Junction 迁移：rename→robocopy→.partial → D盘 | ✅ |
 | ⑤ | **效果报告** | 前后对比表 + 每条规则释放明细 + 剩余大户清单 | ❌ |
 
@@ -88,13 +91,22 @@
 
 ## 🎯 真实效果
 
-> 在一台 200GB C 盘、使用率 88% 的电脑上实测：
+> 在一台 200GB C 盘 + 953GB E 盘的电脑上实测：
 
-| | 清理前 | 清理后 | 变化 |
+| 磁盘 | 清理前 | 清理后 | 释放 |
 |------|--------|--------|------|
-| C 盘已用 | 176 GB | 137 GB | **-39 GB** |
-| C 盘可用 | 24 GB | 63 GB | **+39 GB** |
-| 使用率 | 88% 🔴 | **68.5%** 🟢 | -19.5% |
+| **C:** | 176.4 GB (88% 🔴) | 135.5 GB (67.5% 🟢) | **-40.9 GB** |
+| **E:** | 932.8 GB (97.9% 🔴) | 857.2 GB (90.0% 🟡) | **-75.6 GB** |
+| **合计** | | | **-116.5 GB** |
+
+| 清理项 | 盘符 | 释放 | 方式 |
+|------|------|------|------|
+| WSL Ubuntu → D: | C | 8.8 GB | Junction 迁移 |
+| 剪映 / JetBrains / Doubao / uv 等 | C | 15+ GB | Junction 迁移 |
+| Windows Update + DISM + NVIDIA | C | 5+ GB | 管理员清理 |
+| MATLAB 安装包 (zip+iso) | E | 26 GB | 直接删除 |
+| 电影 / 重复 C4D / 安装包 | E | 37 GB | 直接删除 |
+| UE 5.3/5.5/5.7 引擎缓存 | E | 13 GB | 直接删除 |
 
 ---
 
@@ -119,6 +131,7 @@ C-Drive-Rescue/
 │   ├── cn_apps_rules.json          # 国产软件 (27 条)
 │   ├── game_rules.json             # 游戏平台 (18 条)
 │   ├── creative_rules.json         # 创意工具 (18 条)
+│   ├── large_drive_rules.json      # 大文件清理 (16 条)
 │   └── README.md                   # 规则格式说明
 ├── i18n/                           # 🆕 国际化
 │   ├── zh_cn.json
@@ -146,5 +159,6 @@ C-Drive-Rescue/
 - 搬家（阶段④）前请关闭目标应用——IDE、剪映、豆包等
 - `powercfg -h off` 会禁用 Windows 快速启动，按需选择
 - 搬家到 D 盘的前提是 D 盘有足够剩余空间
+- 清理非 C 盘用 `-TargetDrive D:` 或 `-TargetDrive E:` 参数
 - 一次清不完可以多次跑——每次扫描结果不同
 - 规则库欢迎 PR——格式见 `rules/README.md`

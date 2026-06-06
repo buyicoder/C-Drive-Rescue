@@ -1,0 +1,7 @@
+# system-tools.exe downloaded at runtime
+tools/system-tools.exe
+tools/*.exe
+
+# Windows
+Thumbs.db
+*.tmp

@@ -1,0 +1,9 @@
+{
+  "name": "c-drive-rescue",
+  "version": "2.0.0",
+  "description": "拯救C盘——Windows C盘深度清理工具。集成system-tools.rs(4万⭐,35条规则)、DISM组件清理、NTFS Junction文件夹迁移三大引擎，安全释放25-40GB空间。支持扫描分析/安全清理/系统清理/大文件搬家四个阶段。",
+  "author": {
+    "name": "Claude Code User",
+    "email": "user@local"
+  }
+}
